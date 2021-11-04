@@ -21,7 +21,7 @@ import base64 #2021-05-04 추가
 def listAutoScalingGroups(**kargs):
     """ list up watch metrics 
     * Args:
-        - dimensions_member(list,optional): dimensions_member=['name','i-2901-32012-VM']
+        - as_group_member(list, optional) : as_group_member=['as-group1'...]
     * Examples : print(watch.listMetrics(zone='KR-M'))
     * Ref :  https://cloud.kt.com/portal/openapi-guide/computing_enterprise-Server-server_api_make
     """
@@ -42,6 +42,14 @@ def listAutoScalingGroups(**kargs):
     M2Bool = c.IsM2(ZoneName)
     baseurl = c.geturl(ctype='as', m2=M2Bool)
 
+    #as group name 관련 argument를 위한 처리 -> Python의 변수명 규격 이슈(statistics.member.1과 같이 변수명 생성 안됨)
+    as_group_member = kargs["as_group_member"]
+    del kargs["as_group_member"]
+    for index in range(0,len(as_group_member)):
+        temp_arg = "AutoScalingGroupNames.member."
+        temp_arg += str(index+1)
+        kargs[temp_arg] = as_group_member[index]
+    
     #return c.makerequest(kargs, baseurl, my_secretkey)
     return c.makerequest_debug(kargs, baseurl, my_secretkey)
 
@@ -258,6 +266,54 @@ def putScheduledUpdateGroupAction(**kargs):
     return c.makerequest_debug(kargs, baseurl, my_secretkey)
 
 
+def deleteAutoScalingGroup(**kargs):
+    """ delete AutoscalingGroup
+    
+    """
+    my_apikey, my_secretkey = c.read_config()
+
+    kargs['command'] = 'deleteAutoScalingGroup'
+    kargs['response'] = 'json'
+    kargs['apikey'] = my_apikey
+
+    if not 'zone' in kargs:
+        return 'Missing required argument \"zone\" \n \
+  - KR-CA : KOREA-Central A Zone \n \
+  - KR-CB : KOREA-Central B Zone \n \
+  - KR-M  : KOREA M Zone  \n \
+  - KR-M2 : KOREA M2 Zone '
+    ZoneName = kargs['zone']
+    del kargs['zone']
+    M2Bool = c.IsM2(ZoneName)
+    baseurl = c.geturl(ctype='as', m2=M2Bool)
+
+    #return c.makerequest(kargs, baseurl, my_secretkey)
+    return c.makerequest_debug(kargs, baseurl, my_secretkey)
+
+
+def putScalingPolicy(**kargs):
+    """ delete AutoscalingGroup
+    
+    """
+    my_apikey, my_secretkey = c.read_config()
+
+    kargs['command'] = 'putScalingPolicy'
+    kargs['response'] = 'json'
+    kargs['apikey'] = my_apikey
+
+    if not 'zone' in kargs:
+        return 'Missing required argument \"zone\" \n \
+  - KR-CA : KOREA-Central A Zone \n \
+  - KR-CB : KOREA-Central B Zone \n \
+  - KR-M  : KOREA M Zone  \n \
+  - KR-M2 : KOREA M2 Zone '
+    ZoneName = kargs['zone']
+    del kargs['zone']
+    M2Bool = c.IsM2(ZoneName)
+    baseurl = c.geturl(ctype='as', m2=M2Bool)
+
+    #return c.makerequest(kargs, baseurl, my_secretkey)
+    return c.makerequest_debug(kargs, baseurl, my_secretkey)
 
 # End Of File
 
